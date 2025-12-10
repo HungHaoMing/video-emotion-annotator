@@ -118,18 +118,19 @@ with col1:
 with col2:
     st.header(f"📝 標注面板: {selected_role}")
     
-    # --- 修改開始 ---
-    
-    # 1. 定義一個 callback 函式，當表格被編輯時會自動執行這個函式
-    def save_data():
-        # 把編輯器的當前狀態 (editor_key) 存回我們的主資料 (session_key)
-        # 這樣做可以避免循環重置的問題
-        editor_key = f"editor_{session_key}"
-        if editor_key in st.session_state:
-            st.session_state[session_key] = st.session_state[editor_key]
+    # 建立一個唯一的 Editor Key
+    editor_key = f"editor_{session_key}"
 
-    # 2. 顯示編輯器，並綁定 callback
-    # 注意：這裡我們移除了 "edited_df =" 的賦值，改由 key 和 on_change 自動處理
+    # 1. 如果 editor_key 的變動內容存在，更新回主要的 session_state[session_key]
+    if editor_key in st.session_state:
+        changes = st.session_state[editor_key]
+        # 處理編輯過的行 (edited_rows)
+        for row_idx, edit_content in changes.get("edited_rows", {}).items():
+            for col_name, new_val in edit_content.items():
+                st.session_state[session_key].at[row_idx, col_name] = new_val
+
+    # 2. 顯示編輯器
+    # 關鍵：這裡傳入的是原始的 DataFrame，但指定了 key 用於捕捉變動
     st.data_editor(
         st.session_state[session_key],
         column_config={
@@ -150,13 +151,12 @@ with col2:
             "Role": st.column_config.TextColumn("角色", disabled=True),
         },
         hide_index=True,
-        use_container_width=True,
+        width="stretch", # 更新：替代原本的 use_container_width=True
         height=600,
-        key=f"editor_{session_key}",  # 給每個角色的編輯器一個唯一的 ID
-        on_change=save_data           # 當資料改變時，執行 save_data
+        key=editor_key # 捕捉變動，但不會覆寫 DataFrame 結構
     )
     
-    # 3. 為了讓後面的程式碼 (如下載按鈕) 能抓到最新資料，我們重新宣告 edited_df
+    # 3. 取得最新資料用於下載
     edited_df = st.session_state[session_key]
     
 
