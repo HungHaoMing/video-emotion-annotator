@@ -118,9 +118,19 @@ with col1:
 with col2:
     st.header(f"📝 標注面板: {selected_role}")
     
-    # 使用 Streamlit 的 Data Editor 讓使用者直接編輯表格
-    # 這是最直觀的方式
-    edited_df = st.data_editor(
+    # --- 修改開始 ---
+    
+    # 1. 定義一個 callback 函式，當表格被編輯時會自動執行這個函式
+    def save_data():
+        # 把編輯器的當前狀態 (editor_key) 存回我們的主資料 (session_key)
+        # 這樣做可以避免循環重置的問題
+        editor_key = f"editor_{session_key}"
+        if editor_key in st.session_state:
+            st.session_state[session_key] = st.session_state[editor_key]
+
+    # 2. 顯示編輯器，並綁定 callback
+    # 注意：這裡我們移除了 "edited_df =" 的賦值，改由 key 和 on_change 自動處理
+    st.data_editor(
         st.session_state[session_key],
         column_config={
             "Emotion Label": st.column_config.SelectboxColumn(
@@ -141,11 +151,14 @@ with col2:
         },
         hide_index=True,
         use_container_width=True,
-        height=600
+        height=600,
+        key=f"editor_{session_key}",  # 給每個角色的編輯器一個唯一的 ID
+        on_change=save_data           # 當資料改變時，執行 save_data
     )
-
-    # 更新 State
-    st.session_state[session_key] = edited_df
+    
+    # 3. 為了讓後面的程式碼 (如下載按鈕) 能抓到最新資料，我們重新宣告 edited_df
+    edited_df = st.session_state[session_key]
+    
 
     # 3. 匯出區域
     st.markdown("### 📥 輸出結果")
