@@ -19,12 +19,12 @@ VIDEO_DATA = {
     "Marriage Story": {
         "url": "https://www.youtube.com/watch?v=FDFdroN7d0w",
         "duration_sec": 259, # 4:19
-        "roles": ["Nicole", "Charlie"]
+        "roles": ["Nicole(女性角色)", "Charlie(男性角色)"]
     },
     "2 Broke Girls": {
         "url": "https://www.youtube.com/watch?v=Wfkaq1t7C9o",
         "duration_sec": 181, # 3:01
-        "roles": ["Max", "Caroline"]
+        "roles": ["Max(深色髮女性)", "Caroline(金色髮女性)"]
     }
 }
 
