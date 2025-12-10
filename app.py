@@ -159,7 +159,7 @@ with col2:
         st.success("✅ 所有段落已標記完成！")
 
     # 檔名格式
-    file_name = f"{selected_role}.xlsx"
+    file_name = f"{selected_role}-{annotator_name}.xlsx"
     if selected_video == "2 Broke Girls":
         # 為了區分不同影片，實際存檔時可以加上前綴，但這裡照您的需求輸出單純的角色名
         # 若需要更詳細檔名可改為 f"{selected_video}_{selected_role}.xlsx"
